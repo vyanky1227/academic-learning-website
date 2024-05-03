@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Quiz App </title>
+    <link rel="stylesheet" href="sci.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+</head>
+<body>
+    
+    <div class="start_btn"><button>Start Quiz</button></div>
+
+    
+    <div class="info_box">
+        <div class="info-title"><span>Some Rules of this Quiz</span></div>
+        <div class="info-list">
+            <div class="info">1. You will have only <span>60 seconds</span> per each question.</div>
+            <div class="info">2. Once you select your answer, it can't be undone.</div>
+            <div class="info">3. You can't select any option once time goes off.</div>
+            <div class="info">4. You can't exit from the Quiz while you're playing.</div>
+            <div class="info">5. You'll get points on the basis of your correct answers.</div>
+        </div>
+        <div class="buttons">
+            <button class="quit">Exit Quiz</button>
+            <button class="restart">Continue</button>
+        </div>
+    </div>
+
+    <!-- Quiz Box -->
+    <div class="quiz_box">
+        <header>
+            <div class="title">Science Quiz Application</div>
+            <div class="timer">
+                <div class="time_left_txt">Time Left</div>
+                <div class="timer_sec">15</div>
+            </div>
+            <div class="time_line"></div>
+        </header>
+        <section>
+            <div class="que_text">
+                <!-- Here I've inserted question from JavaScript -->
+            </div>
+            <div class="option_list">
+                <!-- Here I've inserted options from JavaScript -->
+            </div>
+        </section>
+
+        <!-- footer of Quiz Box -->
+        <footer>
+            <div class="total_que">
+                <!-- Here I've inserted Question Count Number from JavaScript -->
+            </div>
+            <button class="next_btn">Next Que</button>
+        </footer>
+    </div>
+
+    <!-- Result Box -->
+    <div class="result_box">
+        <div class="icon">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div class="complete_text">You've completed the Quiz!</div>
+        <div class="score_text">
+            <!-- Here I've inserted Score Result from JavaScript -->
+        </div>
+        <div class="buttons">
+            <button class="restart">Replay Quiz</button>
+            <button class="quit">Quit Quiz</button>
+        </div>
+    </div>
+    <script>
+        // JavaScript code
+const startBtn = document.querySelector(".start_btn button");
+const infoBox = document.querySelector(".info_box");
+const exitBtn = infoBox.querySelector(".buttons .quit");
+const continueBtn = infoBox.querySelector(".buttons .restart");
+const quizBox = document.querySelector(".quiz_box");
+const resultBox = document.querySelector(".result_box");
+const optionList = document.querySelector(".option_list");
+const timeLine = document.querySelector("header .time_line");
+const timeText = document.querySelector(".timer .time_left_txt");
+const timeCount = document.querySelector(".timer .timer_sec");
+
+let timeValue = 60;
+let queCount = 0;
+let userScore = 0;
+let counter;
+let counterLine;
+
+startBtn.addEventListener("click", () => {
+    infoBox.classList.add("activeInfo");
+});
+
+exitBtn.addEventListener("click", () => {
+    infoBox.classList.remove("activeInfo");
+});
+
+continueBtn.addEventListener("click", () => {
+    infoBox.classList.remove("activeInfo");
+    quizBox.classList.add("activeQuiz");
+    showQuestion(queCount);
+    startTimer(timeValue);
+    startTimerLine(0);
+});
+
+function showQuestion(index) {
+    if (index >= questions.length) {
+        showResult();
+        return;
+    }
+    const queText = document.querySelector(".que_text");
+    const que = questions[index];
+    queText.textContent = que.question;
+
+    const options = que.options.map((option, idx) => {
+        return `<div class="option" onclick="optionSelected(this)">
+                    <span>${option}</span>
+                </div>`;
+    });
+    optionList.innerHTML = options.join("");
+}
+
+function optionSelected(answer) {
+    clearInterval(counter);
+    let userAns = answer.textContent.trim();
+    let correctAns = questions[queCount].answer.trim();
+    if (userAns === correctAns) {
+        userScore++;
+    }
+    queCount++;
+    showQuestion(queCount);
+}
+
+function startTimer(time) {
+    timeCount.textContent = time;
+    counter = setInterval(() => {
+        time--;
+        if (time < 0) {
+            timeCount.textContent = "0" + time;
+        } else {
+            timeCount.textContent = time;
+        }
+        if (time < 0) {
+            clearInterval(counter);
+            timeText.textContent = "Time Off";
+            showResult();
+        }
+    }, 1000);
+}
+
+function startTimerLine(width) {
+    counterLine = setInterval(() => {
+        width += 1;
+        timeLine.style.width = width + "px";
+        if (width > 549) {
+            clearInterval(counterLine);
+        }
+    }, 29);
+}
+
+function showResult() {
+    quizBox.classList.remove("activeQuiz");
+    resultBox.classList.add("activeResult");
+    const scoreText = resultBox.querySelector(".score_text");
+    scoreText.textContent = `Your score: ${userScore} / ${questions.length}`;
+}
+
+const restartBtn = resultBox.querySelector(".buttons .restart");
+const quitBtn = resultBox.querySelector(".buttons .quit");
+
+restartBtn.addEventListener("click", () => {
+    resetQuiz();
+});
+
+quitBtn.addEventListener("click", () => {
+    window.location.reload();
+});
+
+function resetQuiz() {
+    queCount = 0;
+    userScore = 0;
+    quizBox.classList.add("activeQuiz");
+    resultBox.classList.remove("activeResult");
+    startTimer(timeValue);
+    startTimerLine(0);
+    showQuestion(queCount);
+}
+</script>
+
+    </script>
+
+    <!-- Inside this JavaScript file I've inserted Questions and Options only -->
+    <script src="js/sciques.js"></script>
+
+    <!-- Inside this JavaScript file I've coded all Quiz Codes -->
+    <script src="js/sci.js"></script>
+
+</body>
+</html>
+</html>

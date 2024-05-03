@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Quiz</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .quiz {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background-color: darkcyan;
+            border-radius: 10px;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 400px; /* Adjust the width as needed */
+            position: relative; /* Added */
+        }
+        
+        .quiz * {
+            width: 100%;
+            height: 25px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .reset {
+            color: #fff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .score {
+            color: #fff;
+            font-weight: bolder;
+        }
+        
+        h1 {
+            color: #fff;
+            margin: 0;
+        }
+        
+        .result {
+            color: pink;
+            font-weight: bolder;
+        }
+        
+        .next {
+            display: none;
+        }
+
+        /* Added */
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <form class='quiz'>
+        <span id="timer">Time left: <span id="countdown">60</span> seconds</span> <!-- Added -->
+        <span class='result'>Solve It</span>
+        <h1>
+            <span class='quest'>10+10</span>
+            <span> = ?</span>
+        </h1>
+        <input type='number' class='ans' placeholder='0' required>
+        <input type='submit' class='submit'>
+        <button type='button' class='next'>Play next</button>
+        <button type='button' class='score' disabled>Score</button>
+        <span class='reset'>Reset score</span>
+    </form>
+    <script>
+        let quiz = document.querySelector(".quiz");
+        let result = document.querySelector(".result");
+        let quest = document.querySelector(".quest");
+        let ans = document.querySelector(".ans");
+        let submit = document.querySelector(".submit");
+        let next = document.querySelector(".next");
+        let score = document.querySelector(".score");
+        let reset = document.querySelector(".reset");
+        let prevScore = ~~localStorage.getItem('score');
+        score.textContent = `Score : ${prevScore}`;
+
+        function gq() {
+            let op = ['+', '-', '*', '/'];
+            let r1 = ~~(Math.random() * 5) + 5;
+            let r2 = ~~(Math.random() * 5);
+            let rop = ~~(Math.random() * 4);
+            quest.textContent = `${r1} ${op[rop]} ${r2}`;
+        }
+
+        function startTimer() {
+            let countdownValue = 60;
+            let countdown = document.getElementById("countdown");
+
+            let countdownInterval = setInterval(function () {
+                countdownValue--;
+                countdown.textContent = countdownValue;
+                if (countdownValue <= 0) {
+                    clearInterval(countdownInterval);
+                    alert("Time's up!");
+                    generateNewQuestion();
+                    resetTimer();
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            let countdown = document.getElementById("countdown");
+            countdown.textContent = 60;
+            startTimer();
+        }
+
+        gq();
+        startTimer();
+
+        quiz.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submit.style.display = "none";
+            next.style.display = "block";
+            let cans = ~~Function('return ' + quest.textContent)().toFixed();
+            if (cans == ans.value) {
+                result.textContent = 'Wow Score Added!';
+                let scr = prevScore + 5;
+                prevScore = scr;
+                localStorage.setItem("score", prevScore);
+                score.textContent = `Score : ${prevScore}`;
+            } else {
+                result.textContent = `Oops! Correct ans is ${cans}`;
+            }
+        })
+        next.addEventListener('click', () => {
+            gq();
+            result.textContent = 'Solve It';
+            quiz.reset();
+            next.style.display = "none";
+            submit.style.display = "block";
+        })
+        reset.addEventListener('click', () => {
+            localStorage.removeItem('score');
+            location.reload();
+        })
+    </script>
+</body>
+
+</html>
